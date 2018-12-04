@@ -311,10 +311,10 @@ and Kong will be running in that instance (as configured in `nginx-kong.conf`).
 
 ## Serving both a website and your APIs from Kong
 
-A common use case for API providers is to make Kong serve both a website
+A common use case for Service providers is to make Kong serve both a website
 and the APIs themselves over the Proxy port &mdash; `80` or `443` in
-production. For example, `https://my-api.com` (Website) and
-`https://my-api.com/api/v1` (API).
+production. For example, `https://example.com` (Website) and
+`https://example.com/api/v1` (Service).
 
 To achieve this, we cannot simply declare a new virtual server block,
 like we did in the previous section. A good solution is to use a custom
@@ -351,7 +351,7 @@ http {
     # here, we declare our custom location serving our website
     # (or API portal) which we can optimize for serving static assets
     location / {
-      root /var/www/my-api.com;
+      root /var/www/example.com;
       index index.htm index.html;
       ...
     }
@@ -1158,9 +1158,9 @@ The origins configuration can be useful in complex networking configurations, an
 
 The term origin (singular) refers to a particular scheme/host or IP address/port triple, as described in RFC 6454 (https://tools.ietf.org/html/rfc6454#section-3.2). In Kong's `origins` configuration, the scheme *must* be one of `http`, `https`, `tcp`, or `tls`. In each pair of origins, the scheme *must* be of similar type - thus `http` can pair with `https`, and `tcp` can pair with `tls`, but `http` and `https` cannot pair with `tcp` and `tls`.
 
-When an encrypted scheme like `tls` or `https` in the left origin is paired with an unencrypted scheme like `tcp` or `http` in the right origin, Kong will terminate TLS on incoming connections matching the left origin, and will then route traffic unencrypted to the specified right origin. This is useful when connections will be made to the Kong node over TLS, but the local service (for which Kong is proxying traffic) doesn't or can't terminate TLS. Similarly, if the left origin is `tcp` or `http` and the right origin is `tls` or `https`, Kong will accept unencrypted incoming traffic, and will then wrap that traffic in TLS as it is routed outbound. This capability is an important enabler of Kong Mesh.  
+When an encrypted scheme like `tls` or `https` in the left origin is paired with an unencrypted scheme like `tcp` or `http` in the right origin, Kong will terminate TLS on incoming connections matching the left origin, and will then route traffic unencrypted to the specified right origin. This is useful when connections will be made to the Kong node over TLS, but the local service (for which Kong is proxying traffic) doesn't or can't terminate TLS. Similarly, if the left origin is `tcp` or `http` and the right origin is `tls` or `https`, Kong will accept unencrypted incoming traffic, and will then wrap that traffic in TLS as it is routed outbound. This capability is an important enabler of Kong Mesh.
 
-Like all Kong configuration settings, the `origins` setting *can* be declared in the `Kong.conf` file - however **it is recommended that Kong administrators avoid doing so**. Instead, `origins` should be set on a per-node basis using [environment variables](https://docs.konghq.com/{{page.kong_version}}/configuration/#environment-variables). As such, `origins` is not present in [`kong.conf.default`](https://github.com/Kong/kong/blob/0.15.0/kong.conf.default).  
+Like all Kong configuration settings, the `origins` setting *can* be declared in the `Kong.conf` file - however **it is recommended that Kong administrators avoid doing so**. Instead, `origins` should be set on a per-node basis using [environment variables](https://docs.konghq.com/{{page.kong_version}}/configuration/#environment-variables). As such, `origins` is not present in [`kong.conf.default`](https://github.com/Kong/kong/blob/0.15.0/kong.conf.default).
 
 In Kubernetes deployments, it is recommended that `origins` not be configured and maintained "by hand" - instead, `origins` for each Kong node should be managed by the [Kubernetes Identity Module (KIM)](FIXME URL needed).
 
